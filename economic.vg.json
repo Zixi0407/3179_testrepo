@@ -1,0 +1,163 @@
+{
+    "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+    "data": {
+      "url": "https://raw.githubusercontent.com/Zixi0407/3179_testrepo/main/economic_freedom_index2019_data.csv"
+    },
+    "params": [
+      {
+        "name": "Continent_selection",
+        "bind": {
+          "input": "select",
+          "options": [
+            null,
+            "Asia-Pacific",
+            "Europe",
+            "Middle East and North Africa",
+            "Sub-Saharan Africa",
+            "Americas"
+          ],
+          "labels": [
+            "Show All",
+            "Asia-Pacific",
+            "Europe",
+            "Middle East and North Africa",
+            "Sub-Saharan Africa",
+            "Americas"
+          ],
+          "name": "Region Selection: "
+        }
+      }
+    ],
+    "vconcat": [
+      {
+        "title": "The economic Freedom Index",
+        "width": 800,
+        "height": 600,
+        "projection": {"type": "equirectangular"},
+        "data": {
+          "url": "https://raw.githubusercontent.com/KaneSec/vega_lite/main/3_choropleth_map/js/ne_110m_admin_0_countries.topojson",
+          "format": {"type": "topojson", "feature": "ne_110m_admin_0_countries"}
+        },
+        "transform": [
+          {
+            "lookup": "properties.NAME",
+            "from": {
+              "data": {
+                "url": "https://raw.githubusercontent.com/Zixi0407/3179_testrepo/main/economic_freedom_index2019_data.csv"
+              },
+              "key": "Country",
+              "fields": ["2019Score"]
+            }
+          }
+        ],
+        "mark": {"type": "geoshape"},
+        "encoding": {
+          "color": {
+            "field": "2019Score",
+            "type": "quantitative",
+            "scale": {
+              "type": "linear",
+              "domain": [0, 40, 50, 60, 70, 80, 100],
+              "range": [
+                "#ffffcc",
+                "#c7e9b4",
+                "#7fcdbb",
+                "#41b6c4",
+                "#1d91c0",
+                "#225ea8",
+                "#0c2c84"
+              ]
+            }
+          },
+          "tooltip": [
+            {"field": "properties.NAME", "type": "nominal", "title": "Country"},
+            {"field": "2019Score", "type": "quantitative", "title": "Score"}
+          ]
+        }
+      },
+      {
+        "width": 800,
+        "height": 600,
+        "title": "Economic Freedom Index 2019",
+        "transform": [
+          {"filter": "datum.BusinessFreedom > 0"},
+          {"filter": "datum.LaborFreedom > 0"},
+          {
+            "filter": "Continent_selection == null || datum.Region == Continent_selection"
+          },
+          {
+            "calculate": "datum.BusinessFreedom/datum.Population * 10000",
+            "as": "Cases per 10,000 Population"
+          }
+        ],
+        "selection": {
+          "continent_highlight": {
+            "type": "multi",
+            "fields": ["Region"],
+            "bind": "legend"
+          }
+        },
+        "mark": "circle",
+        "encoding": {
+          "x": {
+            "field": "BusinessFreedom",
+            "type": "quantitative",
+            "title": "Business Freedom",
+            "axis": {"tickCount": 6},
+            "scale": {"type": "log", "domain": [10, 100]}
+          },
+          "y": {
+            "field": "LaborFreedom",
+            "type": "quantitative",
+            "axis": {"tickCount": 3},
+            "scale": {"type": "log", "domain": [10, 100]}
+          },
+          "color": {
+            "field": "Region",
+            "type": "nominal",
+            "scale": {
+              "domain": [
+                "Asia-Pacific",
+                "Europe",
+                "Middle East and North Africa",
+                "Sub-Saharan Africa",
+                "Americas"
+              ],
+              "range": [
+                "#e41a1c",
+                "#984ea3",
+                "#ff7f00",
+                "#a6cee3",
+                "#377eb8",
+                "#a65628"
+              ]
+            }
+          },
+          "opacity": {
+            "condition": {"selection": "continent_highlight", "value": 0.6},
+            "value": 0.2
+          },
+          "size": {
+            "field": "Population",
+            "type": "quantitative",
+            "scale": {
+              "type": "threshold",
+              "domain": [1, 50, 500],
+              "range": [10, 50, 150, 200, 300, 400]
+            },
+            "legend": {"format": ".1s"}
+          },
+          "tooltip": [
+            {"field": "Country Name", "type": "nominal"},
+            {"field": "BusinessFreedom", "type": "quantitative", "format": ","},
+            {"field": "LaborFreedom", "type": "quantitative", "format": ","},
+            {
+              "field": "Cases per 10,000 Population",
+              "type": "quantitative",
+              "format": ".2f"
+            }
+          ]
+        }
+      }
+    ]
+  }
