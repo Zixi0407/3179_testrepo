@@ -85,10 +85,8 @@
           {
             "filter": "Continent_selection == null || datum.Region == Continent_selection"
           },
-          {
-            "calculate": "datum.BusinessFreedom/datum.Population * 10000",
-            "as": "Cases per 10,000 Population"
-          }
+          {"calculate":"'HongKong has the highest score in 2019'",
+           "as":"text_annotation"}
         ],
         "selection": {
           "continent_highlight": {
@@ -99,18 +97,19 @@
         },
         "mark": "circle",
         "encoding": {
+            "text":{"field":"text_annotation","type":"nominal"},
           "x": {
             "field": "BusinessFreedom",
             "type": "quantitative",
             "title": "Business Freedom",
             "axis": {"tickCount": 6},
-            "scale": {"type": "log", "domain": [10, 100]}
+            "scale": {"type": "linear", "domain": [10, 100]}
           },
           "y": {
             "field": "LaborFreedom",
             "type": "quantitative",
             "axis": {"tickCount": 3},
-            "scale": {"type": "log", "domain": [10, 100]}
+            "scale": {"type": "linear", "domain": [10, 100]}
           },
           "color": {
             "field": "Region",
@@ -138,12 +137,12 @@
             "value": 0.2
           },
           "size": {
-            "field": "Population",
+            "field": "2019Score",
             "type": "quantitative",
             "scale": {
               "type": "threshold",
-              "domain": [1, 50, 500],
-              "range": [10, 50, 150, 200, 300, 400]
+              "domain": [20,40,50,55,60,65,70,80,90,100],
+              "range": [10,50,100,150,200,300,400,500,600,1000]
             },
             "legend": {"format": ".1s"}
           },
