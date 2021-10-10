@@ -152,7 +152,7 @@
             {"field": "BusinessFreedom", "type": "quantitative", "format": ","},
             {"field": "LaborFreedom", "type": "quantitative", "format": ","},
             {
-              "field": "Cases per 10,000 Population",
+              "field": "2019Score",
               "type": "quantitative",
               "format": ".2f"
             }
