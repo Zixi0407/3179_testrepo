@@ -133,7 +133,7 @@
       "type": "quantitative",
       "title": "Trade Freedom",
       "axis": {"tickCount": 10},
-      "scale": {"type": "linear", "domain": [30, 100]}
+      "scale": {"type": "linear", "domain": [0, 100]}
     },
     "y": {
       "field": "BusinessFreedom",
