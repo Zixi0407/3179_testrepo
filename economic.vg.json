@@ -1,37 +1,49 @@
 {
-    "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-    "data": {
-      "url": "https://raw.githubusercontent.com/Zixi0407/3179_testrepo/main/economic_freedom_index2019_data.csv"
-    },
-    "params": [
-      {
-        "name": "Continent_selection",
-        "bind": {
-          "input": "select",
-          "options": [
-            null,
-            "Asia-Pacific",
-            "Europe",
-            "Middle East and North Africa",
-            "Sub-Saharan Africa",
-            "Americas"
-          ],
-          "labels": [
-            "Show All",
-            "Asia-Pacific",
-            "Europe",
-            "Middle East and North Africa",
-            "Sub-Saharan Africa",
-            "Americas"
-          ],
-          "name": "Region Selection: "
-        }
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "description": "Two horizonally concatenated charts that show a histogram of precipitation in Seattle and the relationship between min and max temperature.",
+  "data": {
+    "url": "https://raw.githubusercontent.com/Zixi0407/3179_testrepo/main/economic_freedom_index2019_data.csv"},
+  "params": [
+    {
+      "name": "Score_Above",
+      "value": 0,
+      "bind": {
+        "input": "range",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "name": "Minimum Score: "
       }
-    ],
-    "vconcat": [
-      {
-        "title": "The economic Freedom Index",
-        "width": 800,
+    },
+    {
+      "name": "Continent_selection",
+      "bind": {
+        "input": "select",
+        "options": [
+          null,
+          "Asia-Pacific",
+            "Europe",
+            "Middle East and North Africa",
+            "Sub-Saharan Africa",
+            "Americas"
+        ],
+        "labels": [
+          "Show All",
+          "Asia-Pacific",
+            "Europe",
+            "Middle East and North Africa",
+            "Sub-Saharan Africa",
+            "Americas"
+        ],
+        "name": "Region Selection: "
+      }
+    }
+  ],
+  "columns": 2,
+  "concat": [
+    {
+      "title": "The economic Freedom Index",
+        "width": 600,
         "height": 300,
         "projection": {"type": "equirectangular"},
         "data": {
@@ -46,14 +58,14 @@
                 "url": "https://raw.githubusercontent.com/Zixi0407/3179_testrepo/main/economic_freedom_index2019_data.csv"
               },
               "key": "Country",
-              "fields": ["2019Score"]
+              "fields": ["Score"]
             }
           }
         ],
         "mark": {"type": "geoshape"},
         "encoding": {
           "color": {
-            "field": "2019Score",
+            "field": "Score",
             "type": "quantitative",
             "scale": {
               "type": "linear",
@@ -73,90 +85,185 @@
             {"field": "properties.NAME", "type": "nominal", "title": "Country"},
             {"field": "2019Score", "type": "quantitative", "title": "Score"}
           ]
+      }
+    },
+    {"width": 300,
+
+      "title":"The average of all factors",
+  "height": {"step": 17},
+  "data": {
+    "values": [
+      
+      {"a": "Property Rights", "b":53.2},
+      {"a": "Judical Effectiveness", "b": 45.8}, 
+      {"a": "Government Integrity", "b": 42.3}, 
+      {"a": "Tax Burden", "b": 77.6}, 
+      {"a": "Government Spending", "b": 64.9}, 
+      {"a": "Fiscal Health", "b": 67.3}, 
+      {"a": "Business Freedom", "b": 64.4}, 
+      {"a": "Labor Freedom", "b": 59.9}, 
+      {"a": "Monetary Freedom", "b": 75.8}, 
+      {"a": "Trade Freedom", "b": 74.8}, 
+      {"a": "Investment Freedom", "b": 58.1}, 
+      {"a": "Financial Freedom", "b": 48.9}
+    ]
+  },
+  "mark": "bar",
+  "encoding": {
+    "y": {"field": "a", "type": "nominal","title":"Factors"},
+    "x": {"field": "b", "type": "quantitative", "title":"Score"}
+  }
+      },
+    {
+     "width": 500,
+  "height": 300,
+  "title": "Economic Freedom Index",
+  
+  "transform": [
+    {"filter": "datum.TradeFreedom > 0"},
+    {"filter": "datum.BusinessFreedom > 0"},
+    {"filter": "datum.Score > Score_Above"},
+    {
+      "filter": "Continent_selection == null || datum.Region == Continent_selection"
+    }
+  ],
+  "encoding": {
+    "x": {
+      "field": "TradeFreedom",
+      "type": "quantitative",
+      "title": "Trade Freedom",
+      "axis": {"tickCount": 10},
+      "scale": {"type": "linear", "domain": [30, 100]}
+    },
+    "y": {
+      "field": "BusinessFreedom",
+      "type": "quantitative",
+      "title":"Business Freedom",
+      "axis": {"tickCount": 10},
+      "scale": {"type": "linear", "domain": [0, 100]}
+    }
+  },
+  "layer": [
+    {
+      "selection": {
+        "continent_highlight": {
+          "type": "multi",
+          "fields": ["Region"],
+          "bind": "legend"
         }
       },
-      {
-        "width": 800,
-        "height": 300,
-        "title": "Economic Freedom Index 2019",
-        "transform": [
-          {"filter": "datum.BusinessFreedom > 0"},
-          {"filter": "datum.LaborFreedom > 0"},
-          {
-            "filter": "Continent_selection == null || datum.Region == Continent_selection"
+      "mark": "circle",
+      "encoding": {
+        "size": {
+          "field": "Score",
+          "type": "quantitative",
+          "scale": {
+            "type": "threshold",
+            "domain": [20,40,50,55,60,65,70,80,90],
+            "range": [10, 40, 80, 130, 190, 260,340,430,530,800]
           },
-          {"calculate":"'HongKong has the highest score in 2019'",
-           "as":"text_annotation"}
-        ],
-        "selection": {
-          "continent_highlight": {
-            "type": "multi",
-            "fields": ["Region"],
-            "bind": "legend"
+          "legend": {"format": ".1s"}
+        },
+        "color": {
+          "field": "Region",
+          "type": "nominal",
+          "scale": {
+            "domain": [
+            "Asia-Pacific",
+            "Europe",
+            "Middle East and North Africa",
+            "Sub-Saharan Africa",
+            "Americas"
+            ],
+            "range": [
+              "#e41a1c",
+              "#984ea3",
+              "#ff7f00",
+              "#a6cee3",
+              "#377eb8",
+              "#a65628"
+            ]
           }
         },
-        "mark": "circle",
-        "encoding": {
-            "text":{"field":"text_annotation","type":"nominal"},
-          "x": {
-            "field": "BusinessFreedom",
+        "opacity": {
+          "condition": {"selection": "continent_highlight", "value": 0.6},
+          "value": 0.2
+        },
+        "tooltip": [
+          {"field": "Country", "type": "nominal"},
+          {"field": "TradeFreedom", "type": "quantitative", "format": ","},
+          {"field": "BusinessFreedom", "type": "quantitative", "format": ","},
+          
+          {
+            "field": "Score",
             "type": "quantitative",
-            "title": "Business Freedom",
-            "axis": {"tickCount": 6},
-            "scale": {"type": "linear", "domain": [10, 100]}
-          },
-          "y": {
-            "field": "LaborFreedom",
-            "type": "quantitative",
-            "axis": {"tickCount": 3},
-            "scale": {"type": "linear", "domain": [10, 100]}
-          },
-          "color": {
-            "field": "Region",
-            "type": "nominal",
-            "scale": {
-              "domain": [
-                "Asia-Pacific",
-                "Europe",
-                "Middle East and North Africa",
-                "Sub-Saharan Africa",
-                "Americas"
-              ],
-              "range": [
-                "#e41a1c",
-                "#984ea3",
-                "#ff7f00",
-                "#a6cee3",
-                "#377eb8",
-                "#a65628"
-              ]
-            }
-          },
-          "opacity": {
-            "condition": {"selection": "continent_highlight", "value": 0.6},
-            "value": 0.2
-          },
-          "size": {
-            "field": "2019Score",
-            "type": "quantitative",
-            "scale": {
-              "type": "threshold",
-              "domain": [20,40,50,55,60,65,70,80,90,100],
-              "range": [10,50,100,150,200,300,400,500,600,1000]
-            },
-            "legend": {"format": ".1s"}
-          },
-          "tooltip": [
-            {"field": "Country Name", "type": "nominal"},
-            {"field": "BusinessFreedom", "type": "quantitative", "format": ","},
-            {"field": "LaborFreedom", "type": "quantitative", "format": ","},
-            {
-              "field": "2019Score",
-              "type": "quantitative",
-              "format": ".2f"
-            }
-          ]
-        }
+            "format": ".2f"
+          }
+        ]
       }
-    ]
-  }
+    },
+    {
+      "mark": {
+        "type": "text",
+        "align": "right",
+        "baseline": "middle",
+        "dx": -12,
+        "fontSize": 11.5,
+        "fontStyle": "italic"
+      },
+      "encoding": {
+        "text": {"field": "Country", "type": "nominal"},
+        "color": {"value": "black"},
+        "opacity": {
+          "condition": {
+            "test": "datum['Country'] == 'China' || datum['Country'] == 'United States' || datum['Country'] == 'India' || datum['Country'] == 'Japan' || datum['Country'] == 'Germany' || datum['Country'] == 'Russia' ||  datum['Country'] == 'Indonesia'|| datum['Country'] == 'Brazil'|| datum['Country'] == 'United Kingdom' || datum['Country'] == 'France'", 
+            
+            "value": 1
+          },
+          "value": 0
+        },
+        "tooltip": [
+          {"field": "Country", "type": "nominal"},
+          {"field": "TradeFreedom", "type": "quantitative", "format": ","},
+          {"field": "BusinessFreedom", "type": "quantitative", "format": ","},
+          
+          {
+            "field": "Score",
+            "type": "quantitative",
+            "format": ".2f"
+          }
+        ]
+      }
+    }
+  ]
+},
+{ "width": 200,
+  "height": 300,
+  "title": "10 Top Economic Entity with Highest Score",
+  "data": {"values": [
+      {"a": "HongKong", "b":90.2,"c":1},
+      {"a": "Singapore", "b": 89.4,"c":2}, 
+      {"a": "New Zealand", "b": 84.4,"c":3}, 
+      {"a": "Switzerland", "b": 81.9,"c":4}, 
+      {"a": "Australia", "b":80.9,"c":5}, 
+      {"a": "Ireland", "b": 80.5,"c":6}, 
+      {"a": "United Kingdom", "b": 78.9,"c":7}, 
+      {"a": "Canada", "b": 77.7,"c":8}, 
+      {"a": "United Arab Emirates", "b": 77.6,"c":9}, 
+      {"a": "Taiwan", "b": 77.3,"c":10}
+    ]},
+  "encoding": {
+    "y": {"field": "a", "title":"economic entity","type": "nominal"},
+    "x": {"field": "c", "title":"ranking","type": "ordinal"}
+  },
+  "layer": [
+    {
+      "mark": "rect",
+      "encoding": {
+        "color": {
+          "field": "b",
+          "type": "quantitative",
+          "title": "Economic Freedom Index Score",
+          "legend": {"direction": "horizontal", "gradientLength": 120}
+        }
+      }}]}]}
